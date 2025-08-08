@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:promptura/data/prompts.dart';
 import 'package:promptura/services/settings.dart' show DarkTheme;
 
 class HomeScreen extends StatelessWidget {
@@ -10,92 +11,56 @@ class HomeScreen extends StatelessWidget {
       backgroundColor: DarkTheme.primaryBackground,
       body: CustomScrollView(
         slivers: [
-          // Collapsing header with welcome text and typing area
+          // App bar with title
           SliverAppBar(
             backgroundColor: DarkTheme.primaryBackground,
-            expandedHeight: 320.0,
-            floating: false,
-            pinned: false,
-            stretch: true,
-            flexibleSpace: FlexibleSpaceBar(
-              background: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const SizedBox(height: 40),
-                    // Welcome text (Claude.ai style)
-                    const Text(
-                      'Welcome back',
-                      style: TextStyle(
-                        fontSize: 48,
-                        fontWeight: FontWeight.w300,
-                        color: Colors.white,
-                        height: 1.1,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'How can I help you today?',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w400,
-                        color: Colors.white.withOpacity(0.7),
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 40),
-                    // Beautiful typing area
-                    Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.05),
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(
-                          color: Colors.white.withOpacity(0.1),
-                          width: 1,
-                        ),
-                      ),
-                      child: TextField(
-                        maxLines: null,
-                        decoration: InputDecoration(
-                          hintText: 'Generate ghibli art from...',
-                          hintStyle: TextStyle(
-                            color: Colors.white.withOpacity(0.5),
-                            fontSize: 16,
-                          ),
-                          border: InputBorder.none,
-                          contentPadding: const EdgeInsets.all(20),
-                          suffixIcon: Container(
-                            margin: const EdgeInsets.all(8),
-                            decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.1),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: IconButton(
-                              onPressed: () {},
-                              icon: const Icon(
-                                Icons.send,
-                                color: Colors.white,
-                                size: 20,
-                              ),
-                            ),
-                          ),
-                        ),
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                        ),
-                      ),
-                    ),
-                  ],
+            elevation: 0,
+            floating: true,
+            snap: true,
+            title: const Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Prompt Library',
+                  style: TextStyle(
+                    fontSize: 32,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                  ),
+                ),
+                SizedBox(height: 4),
+                Text(
+                  'Discover creative prompts for your projects',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w400,
+                    color: Colors.white70,
+                  ),
+                ),
+              ],
+            ),
+            toolbarHeight: 120,
+            actions: [
+              // Search icon
+              Padding(
+                padding: const EdgeInsets.only(right: 16),
+                child: IconButton(
+                  onPressed: () {
+                    // Handle search
+                  },
+                  icon: const Icon(
+                    Icons.search,
+                    color: Colors.white,
+                    size: 24,
+                  ),
                 ),
               ),
-            ),
+            ],
           ),
-          // Cards section
+
+          // Cards section - main focus
           SliverPadding(
-            padding: const EdgeInsets.all(24.0),
+            padding: const EdgeInsets.fromLTRB(24.0, 16, 24.0, 100), // Extra bottom padding for FAB
             sliver: SliverGrid(
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
@@ -107,12 +72,54 @@ class HomeScreen extends StatelessWidget {
                 (context, index) {
                   return _buildCard(context, index);
                 },
-                childCount: 12, // Show 12 cards for demonstration
+                childCount: 24, // More cards to showcase the library
               ),
             ),
           ),
         ],
       ),
+      // Floating Action Button for custom prompts
+      floatingActionButton: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16),
+          gradient: const LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              Color(0xFF6366F1), // Indigo
+              Color(0xFF8B5CF6), // Purple
+            ],
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: const Color(0xFF6366F1).withValues(alpha: 0.4),
+              blurRadius: 20,
+              offset: const Offset(0, 8),
+            ),
+          ],
+        ),
+        child: FloatingActionButton.extended(
+          onPressed: () {
+            _showCustomPromptDialog(context);
+          },
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          icon: const Icon(
+            Icons.create,
+            color: Colors.white,
+            size: 20,
+          ),
+          label: const Text(
+            'Create Prompt',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
 
@@ -121,13 +128,17 @@ class HomeScreen extends StatelessWidget {
 
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.05),
+        color: Colors.white.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.white.withOpacity(0.1), width: 1),
+        border: Border.all(
+          color: Colors.white.withValues(alpha: 0.1),
+          width: 1,
+        ),
       ),
       child: InkWell(
         onTap: () {
-          // Handle prompt selection - could populate the typing area with this prompt
+          // Handle prompt selection
+          _handlePromptSelection(context, promptData);
         },
         borderRadius: BorderRadius.circular(16),
         child: Column(
@@ -143,8 +154,8 @@ class HomeScreen extends StatelessWidget {
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                     colors: [
-                      promptData['color'].withOpacity(0.2),
-                      promptData['color'].withOpacity(0.05),
+                      promptData['color'].withValues(alpha: 0.2),
+                      promptData['color'].withValues(alpha: 0.05),
                     ],
                   ),
                   borderRadius: const BorderRadius.only(
@@ -163,7 +174,7 @@ class HomeScreen extends StatelessWidget {
                           Container(
                             padding: const EdgeInsets.all(6),
                             decoration: BoxDecoration(
-                              color: promptData['color'].withOpacity(0.3),
+                              color: promptData['color'].withValues(alpha: 0.3),
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Icon(
@@ -173,12 +184,15 @@ class HomeScreen extends StatelessWidget {
                             ),
                           ),
                           const SizedBox(width: 8),
-                          Text(
-                            promptData['category'],
-                            style: TextStyle(
-                              color: promptData['color'],
-                              fontSize: 11,
-                              fontWeight: FontWeight.w500,
+                          Expanded(
+                            child: Text(
+                              promptData['category'],
+                              style: TextStyle(
+                                color: promptData['color'],
+                                fontSize: 11,
+                                fontWeight: FontWeight.w500,
+                              ),
+                              overflow: TextOverflow.ellipsis,
                             ),
                           ),
                         ],
@@ -189,7 +203,7 @@ class HomeScreen extends StatelessWidget {
                         child: Text(
                           promptData['preview'],
                           style: TextStyle(
-                            color: Colors.white.withOpacity(0.9),
+                            color: Colors.white.withValues(alpha: 0.9),
                             fontSize: 12,
                             height: 1.4,
                             fontStyle: FontStyle.italic,
@@ -228,7 +242,7 @@ class HomeScreen extends StatelessWidget {
                     Text(
                       promptData['description'],
                       style: TextStyle(
-                        color: Colors.white.withOpacity(0.6),
+                        color: Colors.white.withValues(alpha: 0.6),
                         fontSize: 13,
                         height: 1.3,
                       ),
@@ -246,117 +260,174 @@ class HomeScreen extends StatelessWidget {
   }
 
   Map<String, dynamic> _getPromptData(int index) {
-    final promptLibrary = [
-      {
-        'title': 'Code Review Assistant',
-        'description': 'Get detailed code reviews with suggestions',
-        'category': 'CODING',
-        'preview':
-            'Please review this code and provide feedback on:\n• Code structure and organization\n• Performance optimizations\n• Best practices...',
-        'icon': Icons.code_outlined,
-        'color': const Color(0xFF10B981),
-      },
-      {
-        'title': 'Creative Story Writer',
-        'description': 'Generate engaging stories with custom themes',
-        'category': 'CREATIVE',
-        'preview':
-            'Write a compelling short story about [TOPIC] that includes:\n• Vivid character development\n• Engaging plot twists\n• Rich descriptions...',
-        'icon': Icons.auto_stories,
-        'color': const Color(0xFF6366F1),
-      },
-      {
-        'title': 'Email Professional',
-        'description': 'Craft professional emails for any situation',
-        'category': 'BUSINESS',
-        'preview':
-            'Compose a professional email for [SITUATION] that:\n• Maintains appropriate tone\n• Includes clear action items\n• Follows business etiquette...',
-        'icon': Icons.email_outlined,
-        'color': const Color(0xFF3B82F6),
-      },
-      {
-        'title': 'Language Tutor',
-        'description': 'Learn languages with interactive conversations',
-        'category': 'EDUCATION',
-        'preview':
-            'Act as a [LANGUAGE] tutor and help me practice:\n• Basic conversation skills\n• Grammar corrections\n• Cultural context explanations...',
-        'icon': Icons.translate,
-        'color': const Color(0xFFEC4899),
-      },
-      {
-        'title': 'Research Analyst',
-        'description': 'Comprehensive research with citations',
-        'category': 'RESEARCH',
-        'preview':
-            'Research [TOPIC] and provide:\n• Key findings and statistics\n• Multiple perspectives\n• Reliable source citations\n• Summary of implications...',
-        'icon': Icons.search,
-        'color': const Color(0xFF06B6D4),
-      },
-      {
-        'title': 'Marketing Copy',
-        'description': 'Create compelling marketing content',
-        'category': 'MARKETING',
-        'preview':
-            'Create marketing copy for [PRODUCT/SERVICE] that:\n• Highlights key benefits\n• Addresses target audience pain points\n• Includes strong call-to-action...',
-        'icon': Icons.campaign,
-        'color': const Color(0xFFF59E0B),
-      },
-      {
-        'title': 'Interview Prep Coach',
-        'description': 'Practice interviews with realistic scenarios',
-        'category': 'CAREER',
-        'preview':
-            'Help me prepare for a [ROLE] interview by:\n• Asking common interview questions\n• Providing feedback on answers\n• Suggesting improvements...',
-        'icon': Icons.psychology,
-        'color': const Color(0xFF8B5CF6),
-      },
-      {
-        'title': 'Recipe Creator',
-        'description': 'Custom recipes based on your ingredients',
-        'category': 'COOKING',
-        'preview':
-            'Create a recipe using [INGREDIENTS] that:\n• Provides step-by-step instructions\n• Includes cooking times and tips\n• Suggests variations...',
-        'icon': Icons.restaurant_menu,
-        'color': const Color(0xFFDC2626),
-      },
-      {
-        'title': 'Study Guide Maker',
-        'description': 'Comprehensive study materials for any topic',
-        'category': 'EDUCATION',
-        'preview':
-            'Create a study guide for [SUBJECT] that includes:\n• Key concepts and definitions\n• Practice questions\n• Memory techniques\n• Summary charts...',
-        'icon': Icons.menu_book,
-        'color': const Color(0xFF84CC16),
-      },
-      {
-        'title': 'Brainstorm Buddy',
-        'description': 'Creative ideation and problem solving',
-        'category': 'CREATIVE',
-        'preview':
-            'Help me brainstorm ideas for [PROJECT] by:\n• Generating multiple creative concepts\n• Exploring different approaches\n• Asking thought-provoking questions...',
-        'icon': Icons.lightbulb_outline,
-        'color': const Color(0xFFEAB308),
-      },
-      {
-        'title': 'Fitness Planner',
-        'description': 'Personalized workout and nutrition plans',
-        'category': 'HEALTH',
-        'preview':
-            'Design a fitness plan for [GOALS] that includes:\n• Customized workout routines\n• Nutrition recommendations\n• Progress tracking methods...',
-        'icon': Icons.fitness_center,
-        'color': const Color(0xFFF97316),
-      },
-      {
-        'title': 'Travel Planner',
-        'description': 'Detailed itineraries and travel advice',
-        'category': 'TRAVEL',
-        'preview':
-            'Plan a [DURATION] trip to [DESTINATION] with:\n• Day-by-day itinerary\n• Budget recommendations\n• Local tips and cultural insights\n• Booking suggestions...',
-        'icon': Icons.flight_takeoff,
-        'color': const Color(0xFF059669),
-      },
-    ];
-
     return promptLibrary[index % promptLibrary.length];
+  }
+
+  void _handlePromptSelection(BuildContext context, Map<String, dynamic> promptData) {
+    // Navigate to prompt detail or use prompt
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Selected: ${promptData['title']}'),
+        backgroundColor: promptData['color'].withValues(alpha: 0.9),
+      ),
+    );
+  }
+
+  void _showCustomPromptDialog(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (context) => Container(
+        height: MediaQuery.of(context).size.height * 0.8,
+        decoration: BoxDecoration(
+          color: DarkTheme.primaryBackground,
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(24),
+            topRight: Radius.circular(24),
+          ),
+          border: Border.all(
+            color: Colors.white.withValues(alpha: 0.1),
+            width: 1,
+          ),
+        ),
+        child: Padding(
+          padding: EdgeInsets.only(
+            left: 24,
+            right: 24,
+            top: 24,
+            bottom: MediaQuery.of(context).viewInsets.bottom + 24,
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Handle bar
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.3),
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 32),
+              
+              // Title
+              const Text(
+                'Create Custom Prompt',
+                style: TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Write your own prompt to generate exactly what you need',
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.white.withValues(alpha: 0.7),
+                ),
+              ),
+              const SizedBox(height: 32),
+
+              // Input field
+              Expanded(
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.05),
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(
+                      color: Colors.white.withValues(alpha: 0.1),
+                      width: 1,
+                    ),
+                  ),
+                  child: const TextField(
+                    maxLines: null,
+                    expands: true,
+                    textAlignVertical: TextAlignVertical.top,
+                    decoration: InputDecoration(
+                      hintText: 'Generate a Studio Ghibli-style landscape with floating islands, ancient trees, and magical creatures soaring through a golden sunset sky...',
+                      hintStyle: TextStyle(
+                        color: Colors.white54,
+                        fontSize: 16,
+                      ),
+                      border: InputBorder.none,
+                      contentPadding: EdgeInsets.all(20),
+                    ),
+                    style: TextStyle(color: Colors.white, fontSize: 16),
+                  ),
+                ),
+              ),
+              
+              const SizedBox(height: 24),
+              
+              // Action buttons
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: () => Navigator.pop(context),
+                      style: OutlinedButton.styleFrom(
+                        side: BorderSide(
+                          color: Colors.white.withValues(alpha: 0.2),
+                        ),
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: const Text(
+                        'Cancel',
+                        style: TextStyle(
+                          color: Colors.white70,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(12),
+                        gradient: const LinearGradient(
+                          colors: [Color(0xFF6366F1), Color(0xFF8B5CF6)],
+                        ),
+                      ),
+                      child: ElevatedButton(
+                        onPressed: () {
+                          // Handle generate
+                          Navigator.pop(context);
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.transparent,
+                          elevation: 0,
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        child: const Text(
+                          'Generate',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }
