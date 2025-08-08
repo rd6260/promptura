@@ -1,349 +1,362 @@
 import 'package:flutter/material.dart';
+import 'package:promptura/services/settings.dart' show DarkTheme;
 
-class HomeScreen extends StatefulWidget {
-  const HomeScreen({Key? key}) : super(key: key);
-
-  @override
-  State<HomeScreen> createState() => _HomeScreenState();
-}
-
-class _HomeScreenState extends State<HomeScreen> {
-  final PageController _pageController = PageController(initialPage: 1);
-  int _currentPage = 1;
+class HomeScreen extends StatelessWidget {
+  const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
-      body: SafeArea(
-        child: PageView(
-          controller: _pageController,
-          onPageChanged: (index) {
-            setState(() {
-              _currentPage = index;
-            });
-          },
-          children: [
-            _buildSidePanel(),
-            _buildMainScreen(),
-          ],
-        ),
+      backgroundColor: DarkTheme.primaryBackground,
+      body: CustomScrollView(
+        slivers: [
+          // Collapsing header with welcome text and typing area
+          SliverAppBar(
+            backgroundColor: DarkTheme.primaryBackground,
+            expandedHeight: 320.0,
+            floating: false,
+            pinned: false,
+            stretch: true,
+            flexibleSpace: FlexibleSpaceBar(
+              background: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const SizedBox(height: 40),
+                    // Welcome text (Claude.ai style)
+                    const Text(
+                      'Welcome back',
+                      style: TextStyle(
+                        fontSize: 48,
+                        fontWeight: FontWeight.w300,
+                        color: Colors.white,
+                        height: 1.1,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'How can I help you today?',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w400,
+                        color: Colors.white.withOpacity(0.7),
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 40),
+                    // Beautiful typing area
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.05),
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(
+                          color: Colors.white.withOpacity(0.1),
+                          width: 1,
+                        ),
+                      ),
+                      child: TextField(
+                        maxLines: null,
+                        decoration: InputDecoration(
+                          hintText: 'Generate ghibli art from...',
+                          hintStyle: TextStyle(
+                            color: Colors.white.withOpacity(0.5),
+                            fontSize: 16,
+                          ),
+                          border: InputBorder.none,
+                          contentPadding: const EdgeInsets.all(20),
+                          suffixIcon: Container(
+                            margin: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: IconButton(
+                              onPressed: () {},
+                              icon: const Icon(
+                                Icons.send,
+                                color: Colors.white,
+                                size: 20,
+                              ),
+                            ),
+                          ),
+                        ),
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          // Cards section
+          SliverPadding(
+            padding: const EdgeInsets.all(24.0),
+            sliver: SliverGrid(
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                crossAxisSpacing: 16,
+                mainAxisSpacing: 16,
+                childAspectRatio: 0.85, // Taller cards for thumbnail + text
+              ),
+              delegate: SliverChildBuilderDelegate(
+                (context, index) {
+                  return _buildCard(context, index);
+                },
+                childCount: 12, // Show 12 cards for demonstration
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
 
-  Widget _buildSidePanel() {
-    return Row(
-      children: [
-        Container(
-          width: MediaQuery.of(context).size.width * 0.8,
-          color: const Color(0xFF1A1A1A),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
+  Widget _buildCard(BuildContext context, int index) {
+    final promptData = _getPromptData(index);
+
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.05),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.white.withOpacity(0.1), width: 1),
+      ),
+      child: InkWell(
+        onTap: () {
+          // Handle prompt selection - could populate the typing area with this prompt
+        },
+        borderRadius: BorderRadius.circular(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Top section with search and menu
-            Row(
-              children: [
-                Expanded(
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF2A2A2A),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: const Row(
-                      children: [
-                        Icon(Icons.search, color: Colors.grey, size: 20),
-                        SizedBox(width: 8),
-                        Text(
-                          'Search',
-                          style: TextStyle(color: Colors.grey, fontSize: 16),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF2A2A2A),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: const Icon(Icons.edit, color: Colors.white, size: 20),
-                ),
-                const SizedBox(width: 8),
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF2A2A2A),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: const Icon(Icons.menu, color: Colors.white, size: 20),
-                ),
-              ],
-            ),
-            const SizedBox(height: 24),
-            
-            // Menu items
-            _buildMenuItem(Icons.edit, 'New chat'),
-            _buildMenuItem(Icons.folder_outlined, 'Library'),
-            _buildMenuItem(Icons.apps, 'GPTs'),
-            _buildMenuItem(Icons.chat_bubble_outline, 'Chats'),
-            
-            const SizedBox(height: 16),
-            
-            // Chat history
+            // Big thumbnail area showing prompt preview
             Expanded(
-              child: ListView(
-                children: [
-                  _buildChatItem('Tmux script explanation'),
-                  _buildChatItem('Resistor value printing reasons'),
-                  _buildChatItem('Idea check-in rewrite', isActive: true),
-                  _buildChatItem('Hackathon team names'),
-                  _buildChatItem('Readme for wallpaper repo'),
-                  _buildChatItem('Brffs RAID overview'),
-                  _buildChatItem('Improve the phrase'),
-                  _buildChatItem('Lu ma event platform'),
-                  _buildChatItem('Improve message tone'),
-                  _buildChatItem('Reply to where from'),
-                  _buildChatItem('Improve sentence clarity'),
-                  _buildChatItem('Mail to HOD'),
-                  _buildChatItem('Translate Japanese greeting'),
-                ],
+              flex: 3,
+              child: Container(
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      promptData['color'].withOpacity(0.2),
+                      promptData['color'].withOpacity(0.05),
+                    ],
+                  ),
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(16),
+                    topRight: Radius.circular(16),
+                  ),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Category icon and label
+                      Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(6),
+                            decoration: BoxDecoration(
+                              color: promptData['color'].withOpacity(0.3),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Icon(
+                              promptData['icon'],
+                              color: promptData['color'],
+                              size: 16,
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            promptData['category'],
+                            style: TextStyle(
+                              color: promptData['color'],
+                              fontSize: 11,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 12),
+                      // Prompt preview text
+                      Expanded(
+                        child: Text(
+                          promptData['preview'],
+                          style: TextStyle(
+                            color: Colors.white.withOpacity(0.9),
+                            fontSize: 12,
+                            height: 1.4,
+                            fontStyle: FontStyle.italic,
+                          ),
+                          maxLines: 4,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ),
             ),
-            
-            // Bottom section
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              decoration: BoxDecoration(
-                color: const Color(0xFF2A2A2A),
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: const Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  CircleAvatar(
-                    radius: 12,
-                    backgroundColor: Color(0xFF4A4A4A),
-                    child: Text('SP', style: TextStyle(fontSize: 10, color: Colors.white)),
-                  ),
-                  SizedBox(width: 8),
-                  Text('rd 626', style: TextStyle(color: Colors.white, fontSize: 14)),
-                  SizedBox(width: 4),
-                  Icon(Icons.keyboard_arrow_down, color: Colors.white, size: 16),
-                ],
+            // Text content area
+            Expanded(
+              flex: 2,
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    // Primary text (prompt title)
+                    Text(
+                      promptData['title'],
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 6),
+                    // Secondary text (prompt description)
+                    Text(
+                      promptData['description'],
+                      style: TextStyle(
+                        color: Colors.white.withOpacity(0.6),
+                        fontSize: 13,
+                        height: 1.3,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
               ),
             ),
           ],
         ),
       ),
-    )]);
-  }
-
-  Widget _buildMainScreen() {
-    return Container(
-      color: Colors.black,
-      child: Column(
-        children: [
-          // Top bar
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Row(
-              children: [
-                GestureDetector(
-                  onTap: () {
-                    _pageController.animateToPage(
-                      0,
-                      duration: const Duration(milliseconds: 300),
-                      curve: Curves.easeInOut,
-                    );
-                  },
-                  child: const Icon(Icons.menu, color: Colors.white),
-                ),
-                const Spacer(),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF3A3A5C),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: const Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(Icons.add, color: Colors.white, size: 16),
-                      SizedBox(width: 4),
-                      Text('Get Plus', style: TextStyle(color: Colors.white, fontSize: 14)),
-                    ],
-                  ),
-                ),
-                const Spacer(),
-                const Icon(Icons.refresh, color: Colors.white),
-              ],
-            ),
-          ),
-          
-          // Main content
-          Expanded(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Text(
-                  'What can I help with?',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 24,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                const SizedBox(height: 40),
-                
-                // Action buttons
-                Wrap(
-                  spacing: 12,
-                  runSpacing: 12,
-                  alignment: WrapAlignment.center,
-                  children: [
-                    _buildActionButton(Icons.image_outlined, 'Create image'),
-                    _buildActionButton(Icons.code, 'Code'),
-                    _buildActionButton(Icons.bar_chart, 'Analyze data'),
-                    _buildActionButton(Icons.card_giftcard, 'Surprise me'),
-                    _buildActionButton(Icons.visibility, 'Analyze images'),
-                    _buildActionButton(Icons.more_horiz, 'More'),
-                  ],
-                ),
-              ],
-            ),
-          ),
-          
-          // Bottom input area
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: const BoxDecoration(
-                    color: Color(0xFF2A2A2A),
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(Icons.smart_toy, color: Colors.white, size: 20),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF2A2A2A),
-                      borderRadius: BorderRadius.circular(25),
-                    ),
-                    child: const Text(
-                      'Ask anything',
-                      style: TextStyle(color: Colors.grey, fontSize: 16),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: const BoxDecoration(
-                    color: Color(0xFF2A2A2A),
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(Icons.mic, color: Colors.white, size: 20),
-                ),
-                const SizedBox(width: 8),
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: const BoxDecoration(
-                    color: Color(0xFF2A2A2A),
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(Icons.graphic_eq, color: Colors.white, size: 20),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
     );
   }
 
-  Widget _buildMenuItem(IconData icon, String title) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
-      child: Row(
-        children: [
-          Icon(icon, color: Colors.white, size: 20),
-          const SizedBox(width: 12),
-          Text(
-            title,
-            style: const TextStyle(color: Colors.white, fontSize: 16),
-          ),
-        ],
-      ),
-    );
-  }
+  Map<String, dynamic> _getPromptData(int index) {
+    final promptLibrary = [
+      {
+        'title': 'Code Review Assistant',
+        'description': 'Get detailed code reviews with suggestions',
+        'category': 'CODING',
+        'preview':
+            'Please review this code and provide feedback on:\n• Code structure and organization\n• Performance optimizations\n• Best practices...',
+        'icon': Icons.code_outlined,
+        'color': const Color(0xFF10B981),
+      },
+      {
+        'title': 'Creative Story Writer',
+        'description': 'Generate engaging stories with custom themes',
+        'category': 'CREATIVE',
+        'preview':
+            'Write a compelling short story about [TOPIC] that includes:\n• Vivid character development\n• Engaging plot twists\n• Rich descriptions...',
+        'icon': Icons.auto_stories,
+        'color': const Color(0xFF6366F1),
+      },
+      {
+        'title': 'Email Professional',
+        'description': 'Craft professional emails for any situation',
+        'category': 'BUSINESS',
+        'preview':
+            'Compose a professional email for [SITUATION] that:\n• Maintains appropriate tone\n• Includes clear action items\n• Follows business etiquette...',
+        'icon': Icons.email_outlined,
+        'color': const Color(0xFF3B82F6),
+      },
+      {
+        'title': 'Language Tutor',
+        'description': 'Learn languages with interactive conversations',
+        'category': 'EDUCATION',
+        'preview':
+            'Act as a [LANGUAGE] tutor and help me practice:\n• Basic conversation skills\n• Grammar corrections\n• Cultural context explanations...',
+        'icon': Icons.translate,
+        'color': const Color(0xFFEC4899),
+      },
+      {
+        'title': 'Research Analyst',
+        'description': 'Comprehensive research with citations',
+        'category': 'RESEARCH',
+        'preview':
+            'Research [TOPIC] and provide:\n• Key findings and statistics\n• Multiple perspectives\n• Reliable source citations\n• Summary of implications...',
+        'icon': Icons.search,
+        'color': const Color(0xFF06B6D4),
+      },
+      {
+        'title': 'Marketing Copy',
+        'description': 'Create compelling marketing content',
+        'category': 'MARKETING',
+        'preview':
+            'Create marketing copy for [PRODUCT/SERVICE] that:\n• Highlights key benefits\n• Addresses target audience pain points\n• Includes strong call-to-action...',
+        'icon': Icons.campaign,
+        'color': const Color(0xFFF59E0B),
+      },
+      {
+        'title': 'Interview Prep Coach',
+        'description': 'Practice interviews with realistic scenarios',
+        'category': 'CAREER',
+        'preview':
+            'Help me prepare for a [ROLE] interview by:\n• Asking common interview questions\n• Providing feedback on answers\n• Suggesting improvements...',
+        'icon': Icons.psychology,
+        'color': const Color(0xFF8B5CF6),
+      },
+      {
+        'title': 'Recipe Creator',
+        'description': 'Custom recipes based on your ingredients',
+        'category': 'COOKING',
+        'preview':
+            'Create a recipe using [INGREDIENTS] that:\n• Provides step-by-step instructions\n• Includes cooking times and tips\n• Suggests variations...',
+        'icon': Icons.restaurant_menu,
+        'color': const Color(0xFFDC2626),
+      },
+      {
+        'title': 'Study Guide Maker',
+        'description': 'Comprehensive study materials for any topic',
+        'category': 'EDUCATION',
+        'preview':
+            'Create a study guide for [SUBJECT] that includes:\n• Key concepts and definitions\n• Practice questions\n• Memory techniques\n• Summary charts...',
+        'icon': Icons.menu_book,
+        'color': const Color(0xFF84CC16),
+      },
+      {
+        'title': 'Brainstorm Buddy',
+        'description': 'Creative ideation and problem solving',
+        'category': 'CREATIVE',
+        'preview':
+            'Help me brainstorm ideas for [PROJECT] by:\n• Generating multiple creative concepts\n• Exploring different approaches\n• Asking thought-provoking questions...',
+        'icon': Icons.lightbulb_outline,
+        'color': const Color(0xFFEAB308),
+      },
+      {
+        'title': 'Fitness Planner',
+        'description': 'Personalized workout and nutrition plans',
+        'category': 'HEALTH',
+        'preview':
+            'Design a fitness plan for [GOALS] that includes:\n• Customized workout routines\n• Nutrition recommendations\n• Progress tracking methods...',
+        'icon': Icons.fitness_center,
+        'color': const Color(0xFFF97316),
+      },
+      {
+        'title': 'Travel Planner',
+        'description': 'Detailed itineraries and travel advice',
+        'category': 'TRAVEL',
+        'preview':
+            'Plan a [DURATION] trip to [DESTINATION] with:\n• Day-by-day itinerary\n• Budget recommendations\n• Local tips and cultural insights\n• Booking suggestions...',
+        'icon': Icons.flight_takeoff,
+        'color': const Color(0xFF059669),
+      },
+    ];
 
-  Widget _buildChatItem(String title, {bool isActive = false}) {
-    return Container(
-      margin: const EdgeInsets.symmetric(vertical: 2),
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      decoration: BoxDecoration(
-        color: isActive ? const Color(0xFF2A2A2A) : Colors.transparent,
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: Text(
-              title,
-              style: const TextStyle(color: Colors.white, fontSize: 14),
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
-          if (isActive)
-            Container(
-              width: 6,
-              height: 6,
-              decoration: const BoxDecoration(
-                color: Colors.blue,
-                shape: BoxShape.circle,
-              ),
-            ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildActionButton(IconData icon, String label) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      decoration: BoxDecoration(
-        color: const Color(0xFF1A1A1A),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: const Color(0xFF2A2A2A)),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, color: Colors.white, size: 16),
-          const SizedBox(width: 8),
-          Text(
-            label,
-            style: const TextStyle(color: Colors.white, fontSize: 14),
-          ),
-        ],
-      ),
-    );
-  }
-
-  @override
-  void dispose() {
-    _pageController.dispose();
-    super.dispose();
+    return promptLibrary[index % promptLibrary.length];
   }
 }
