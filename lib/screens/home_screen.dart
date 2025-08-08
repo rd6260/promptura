@@ -21,7 +21,7 @@ class HomeScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Prompt Library',
+                  'Promptura',
                   style: TextStyle(
                     fontSize: 32,
                     fontWeight: FontWeight.w600,
@@ -30,7 +30,7 @@ class HomeScreen extends StatelessWidget {
                 ),
                 SizedBox(height: 4),
                 Text(
-                  'Discover creative prompts for your projects',
+                  'Discover creative prompts for your needs',
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w400,
@@ -48,11 +48,7 @@ class HomeScreen extends StatelessWidget {
                   onPressed: () {
                     // Handle search
                   },
-                  icon: const Icon(
-                    Icons.search,
-                    color: Colors.white,
-                    size: 24,
-                  ),
+                  icon: const Icon(Icons.search, color: Colors.white, size: 24),
                 ),
               ),
             ],
@@ -60,7 +56,12 @@ class HomeScreen extends StatelessWidget {
 
           // Cards section - main focus
           SliverPadding(
-            padding: const EdgeInsets.fromLTRB(24.0, 16, 24.0, 100), // Extra bottom padding for FAB
+            padding: const EdgeInsets.fromLTRB(
+              24.0,
+              16,
+              24.0,
+              100,
+            ), // Extra bottom padding for FAB
             sliver: SliverGrid(
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
@@ -104,11 +105,7 @@ class HomeScreen extends StatelessWidget {
           },
           backgroundColor: Colors.transparent,
           elevation: 0,
-          icon: const Icon(
-            Icons.create,
-            color: Colors.white,
-            size: 20,
-          ),
+          icon: const Icon(Icons.create, color: Colors.white, size: 20),
           label: const Text(
             'Create Prompt',
             style: TextStyle(
@@ -263,7 +260,10 @@ class HomeScreen extends StatelessWidget {
     return promptLibrary[index % promptLibrary.length];
   }
 
-  void _handlePromptSelection(BuildContext context, Map<String, dynamic> promptData) {
+  void _handlePromptSelection(
+    BuildContext context,
+    Map<String, dynamic> promptData,
+  ) {
     // Navigate to prompt detail or use prompt
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -313,7 +313,7 @@ class HomeScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 32),
-              
+
               // Title
               const Text(
                 'Create Custom Prompt',
@@ -349,11 +349,9 @@ class HomeScreen extends StatelessWidget {
                     expands: true,
                     textAlignVertical: TextAlignVertical.top,
                     decoration: InputDecoration(
-                      hintText: 'Generate a Studio Ghibli-style landscape with floating islands, ancient trees, and magical creatures soaring through a golden sunset sky...',
-                      hintStyle: TextStyle(
-                        color: Colors.white54,
-                        fontSize: 16,
-                      ),
+                      hintText:
+                          'Generate a Studio Ghibli-style landscape with floating islands, ancient trees, and magical creatures soaring through a golden sunset sky...',
+                      hintStyle: TextStyle(color: Colors.white54, fontSize: 16),
                       border: InputBorder.none,
                       contentPadding: EdgeInsets.all(20),
                     ),
@@ -361,9 +359,9 @@ class HomeScreen extends StatelessWidget {
                   ),
                 ),
               ),
-              
+
               const SizedBox(height: 24),
-              
+
               // Action buttons
               Row(
                 children: [
